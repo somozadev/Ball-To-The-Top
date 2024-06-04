@@ -11,6 +11,8 @@ public class Terrain : MonoBehaviour
 
     [SerializeField] private PhysicsMaterial2D _iceMaterial;
 
+    public bool isInContact;
+
     private void Awake()
     {
         if (_type == TerrainType.ICEY || _changedType == TerrainType.ICEY)
@@ -30,35 +32,59 @@ public class Terrain : MonoBehaviour
             ApplyEffect(other.gameObject.GetComponent<BallController>());
     }
 
+    private void OnCollisionExit2D(Collision2D other)
+    {
+        if (!other.gameObject.CompareTag("Player")) return;
+        if (IsStillInContact(other.collider)) return;
+        isInContact = false;
+        RemoveFromChild(other.transform);
+    }
+
     private void ApplyEffect(BallController ball)
     {
+        isInContact = true;
         switch (_currentType)
         {
             case TerrainType.JUMPY:
                 GetComponent<PolygonCollider2D>().sharedMaterial = null;
                 ball.ApplyForce(transform.up.normalized, 15f);
+                SetAsChild(ball.transform);
                 break;
             case TerrainType.POISONOUS:
                 GetComponent<PolygonCollider2D>().sharedMaterial = null;
                 ball.transform.position = ball.lastStablePosition;
                 ball.ResetVelocity();
+                SetAsChild(ball.transform);
                 break;
             case TerrainType.STICKY:
                 GetComponent<PolygonCollider2D>().sharedMaterial = null;
+                SetAsChild(ball.transform);
                 ball.DisableGravity();
                 ball.ResetVelocity();
                 break;
             case TerrainType.ICEY:
                 GetComponent<PolygonCollider2D>().sharedMaterial = _iceMaterial;
+                SetAsChild(ball.transform);
                 break;
             case TerrainType.DEFAULT:
             default:
                 GetComponent<PolygonCollider2D>().sharedMaterial = null;
+                SetAsChild(ball.transform);
                 break;
         }
 
         if (_changeTypeOnHit) _currentType = _currentType == _type ? _changedType : _type;
         UpdateVisualsType();
+    }
+
+    private void SetAsChild(Transform ball)
+    {
+        ball.SetParent(transform, true);
+    }
+
+    private void RemoveFromChild(Transform ball)
+    {
+        ball.SetParent(null, true);
     }
 
     private void UpdateVisualsType()
@@ -83,6 +109,12 @@ public class Terrain : MonoBehaviour
                 break;
         }
     }
+
+    private bool IsStillInContact(Collider2D other)
+    {
+        Collider2D terrainCollider = GetComponent<Collider2D>();
+        return terrainCollider.bounds.Intersects(other.bounds);
+    }
 }
 
 
@@ -92,6 +124,5 @@ public enum TerrainType
     STICKY,
     ICEY,
     POISONOUS,
-    JUMPY,
-    PORTAL
+    JUMPY
 }

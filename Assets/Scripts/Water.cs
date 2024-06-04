@@ -53,6 +53,8 @@ public class Water : MonoBehaviour
             waterPoint.Init(this);
         }
 
+        points[0].isBorder = true;
+        points[wavesAmount-1].isBorder = true;
         _lineRenderer.positionCount = wavesAmount;
     }
 

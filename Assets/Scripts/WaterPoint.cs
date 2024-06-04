@@ -15,6 +15,8 @@ public class WaterPoint : MonoBehaviour
     [SerializeField] private float sinFrequency = 2f;
     [SerializeField] private float propagationDecreaseValue = 1.25f;
 
+    public bool isBorder = false;
+
     public void Init(Water water)
     {
         velocity = 0;
@@ -44,6 +46,8 @@ public class WaterPoint : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
+        if (isBorder) return;
+
         if (!other.gameObject.tag.Equals("Player")) return;
         var ball = other.gameObject.GetComponent<BallController>();
 
@@ -57,6 +61,7 @@ public class WaterPoint : MonoBehaviour
 
     public void ApplyHit(float speedY, bool goLeft, bool goRight, bool isCenter, bool negative)
     {
+        if(isBorder) return;
         velocity += Mathf.Abs(speedY) / resistance;
         if (negative) velocity *= -1;
 
