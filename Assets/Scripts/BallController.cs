@@ -123,11 +123,20 @@ public class BallController : MonoBehaviour
 
         Instantiate(_hitParticle, other.collider.ClosestPoint(transform.position),
             quaternion.identity); //Update to use object pooling
-
+        Debug.LogWarning($"COLISSION ENTERED IN BALL WITH {other.gameObject.name}");
         ManageTerrainList(other);
     }
 
-    private void OnCollisionExit2D(Collision2D other) => _currentTerrain = null;
+    private void OnCollisionExit2D(Collision2D other)
+    {
+        Debug.LogWarning($"COLISSION EXITED IN BALL WITH {other.gameObject.name}");
+    }
+
+    private void OnCollisionStay2D(Collision2D other)
+    {
+        if (_currentTerrain == null)
+            ManageTerrainList(other);
+    }
 
     #endregion
 
@@ -205,7 +214,7 @@ public class BallController : MonoBehaviour
     }
 
     public void DisableGravity() => rb.gravityScale = 0;
-    private void EnableGravity() => rb.gravityScale = 1;
+    public void EnableGravity() => rb.gravityScale = 1;
 
     public void ResetVelocity()
     {
@@ -215,6 +224,12 @@ public class BallController : MonoBehaviour
 
     private void Launch()
     {
+        if (_currentTerrain)
+        {
+            _currentTerrain.GetComponent<Terrain>().RemoveFromChild(transform);
+            _currentTerrain = null;
+        }
+
         EnableGravity();
         canInteract = false;
         rb.AddForce(_velocity, ForceMode2D.Impulse);

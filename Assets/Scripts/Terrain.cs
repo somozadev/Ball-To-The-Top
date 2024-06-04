@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -29,18 +31,22 @@ public class Terrain : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("Player"))
-            ApplyEffect(other.gameObject.GetComponent<BallController>());
+        {
+            var cp = other.GetContact(0);
+            ApplyEffect(other.gameObject.GetComponent<BallController>(), cp);
+        }
     }
 
-    private void OnCollisionExit2D(Collision2D other)
-    {
-        if (!other.gameObject.CompareTag("Player")) return;
-        if (IsStillInContact(other.collider)) return;
-        isInContact = false;
-        RemoveFromChild(other.transform);
-    }
+    // private void OnCollisionExit2D(Collision2D other)
+    // {
+    //     if (!other.gameObject.CompareTag("Player")) return;
+    //     if (IsStillInContact(other.collider)) return;
+    //     isInContact = false;
+    //     RemoveFromChild(other.transform);
+    //     other.gameObject.GetComponent<BallController>().EnableGravity();
+    // }
 
-    private void ApplyEffect(BallController ball)
+    private void ApplyEffect(BallController ball, ContactPoint2D contactPoint2D)
     {
         isInContact = true;
         switch (_currentType)
@@ -58,9 +64,10 @@ public class Terrain : MonoBehaviour
                 break;
             case TerrainType.STICKY:
                 GetComponent<PolygonCollider2D>().sharedMaterial = null;
-                SetAsChild(ball.transform);
                 ball.DisableGravity();
                 ball.ResetVelocity();
+                ball.transform.position = contactPoint2D.point;
+                SetAsChild(ball.transform);
                 break;
             case TerrainType.ICEY:
                 GetComponent<PolygonCollider2D>().sharedMaterial = _iceMaterial;
@@ -82,9 +89,17 @@ public class Terrain : MonoBehaviour
         ball.SetParent(transform, true);
     }
 
-    private void RemoveFromChild(Transform ball)
+    public void RemoveFromChild(Transform ball)
     {
         ball.SetParent(null, true);
+        isInContact = false;
+    }
+
+    private IEnumerator ApplyStickyEffect(BallController ball)
+    {
+        yield return new WaitForSeconds(0.1f);
+        ball.DisableGravity();
+        ball.ResetVelocity();
     }
 
     private void UpdateVisualsType()
