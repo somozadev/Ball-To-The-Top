@@ -123,14 +123,14 @@ public class BallController : MonoBehaviour
 
         Instantiate(_hitParticle, other.collider.ClosestPoint(transform.position),
             quaternion.identity); //Update to use object pooling
-        Debug.LogWarning($"COLISSION ENTERED IN BALL WITH {other.gameObject.name}");
+        // Debug.LogWarning($"COLISSION ENTERED IN BALL WITH {other.gameObject.name}");
         ManageTerrainList(other);
     }
 
-    private void OnCollisionExit2D(Collision2D other)
-    {
-        Debug.LogWarning($"COLISSION EXITED IN BALL WITH {other.gameObject.name}");
-    }
+    // private void OnCollisionExit2D(Collision2D other)
+    // {
+    //     Debug.LogWarning($"COLISSION EXITED IN BALL WITH {other.gameObject.name}");
+    // }
 
     private void OnCollisionStay2D(Collision2D other)
     {
