@@ -45,6 +45,24 @@ public class Terrain : MonoBehaviour
     //     RemoveFromChild(other.transform);
     //     other.gameObject.GetComponent<BallController>().EnableGravity();
     // }
+    private void OnDrawGizmos()
+    {
+        if (!drawGizmos) return;
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(firstFacePoint, 0.2f);
+        Gizmos.DrawWireSphere(secondFacePoint, 0.2f);
+
+        Gizmos.color = Color.cyan;
+        var lineVector = secondFacePoint - firstFacePoint;
+        var lineVectorXY = new Vector3(lineVector.x, lineVector.y, 0);
+        var normalXY = new Vector3(-lineVectorXY.y, lineVectorXY.x, 0);
+        normalXY.Normalize();
+        Gizmos.DrawLine(transform.position, transform.position + normalXY);
+    }
+
+    [SerializeField] private bool drawGizmos;
+    [SerializeField] private Vector3 firstFacePoint;
+    [SerializeField] private Vector3 secondFacePoint;
 
     private void ApplyEffect(BallController ball, ContactPoint2D contactPoint2D)
     {
@@ -53,14 +71,18 @@ public class Terrain : MonoBehaviour
         {
             case TerrainType.JUMPY:
                 GetComponent<PolygonCollider2D>().sharedMaterial = null;
-                ball.ApplyForce(transform.up.normalized, 15f);
-                SetAsChild(ball.transform);
+                var lineVector = secondFacePoint - firstFacePoint;
+                var lineVectorXY = new Vector3(lineVector.x, lineVector.y, 0);
+                var normalXY = new Vector3(-lineVectorXY.y, lineVectorXY.x, 0);
+                normalXY.Normalize();
+                ball.ApplyForce(normalXY , 15f);
+                // SetAsChild(ball.transform);
                 break;
             case TerrainType.POISONOUS:
                 GetComponent<PolygonCollider2D>().sharedMaterial = null;
                 ball.transform.position = ball.lastStablePosition;
                 ball.ResetVelocity();
-                SetAsChild(ball.transform);
+                // SetAsChild(ball.transform);
                 break;
             case TerrainType.STICKY:
                 GetComponent<PolygonCollider2D>().sharedMaterial = null;
@@ -71,12 +93,12 @@ public class Terrain : MonoBehaviour
                 break;
             case TerrainType.ICEY:
                 GetComponent<PolygonCollider2D>().sharedMaterial = _iceMaterial;
-                SetAsChild(ball.transform);
+                // SetAsChild(ball.transform);
                 break;
             case TerrainType.DEFAULT:
             default:
                 GetComponent<PolygonCollider2D>().sharedMaterial = null;
-                SetAsChild(ball.transform);
+                // SetAsChild(ball.transform);
                 break;
         }
 
