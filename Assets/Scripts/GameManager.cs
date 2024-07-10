@@ -122,7 +122,7 @@ public class GameManager : MonoBehaviour, IUnityAdsInitializationListener
         detectMouseGameInput = true;
         AnalyticsSystemRef.AdReaction(false);
     }
-
+ 
     private IEnumerator WaitToHideRestorePosCanvasAd()
     {
         yield return new WaitForSeconds(6.5f);
@@ -149,7 +149,7 @@ public class GameManager : MonoBehaviour, IUnityAdsInitializationListener
         DataController.Save(currentData);
     }
 
-    public void OnInitializationComplete()
+    public void OnInitializationComplete() 
     {
         Debug.Log("Ads Initialized correctly");
     }
