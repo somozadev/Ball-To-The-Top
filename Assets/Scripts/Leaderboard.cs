@@ -14,13 +14,19 @@ public class Leaderboard : MonoBehaviour
     [SerializeField] private GameObject content;
     [SerializeField] private GameObject leaderboardUnitPrefab;
     [SerializeField] private Loading _loading;
+    [SerializeField] private GameObject errorFetchingText;
 
+    public void TriggerSubmission()
+    {
+        GetComponent<LeaderboardSubmittingField>().EnableSubmission();
+    }
 
     [ContextMenu("FetchLeaderboard")]
     public void FetchLeaderboard()
     {
+        errorFetchingText.SetActive(false);
         _loading.gameObject.SetActive(true);
-        Leaderboards.BallItUp.GetEntries(true, Callbacks);
+        Leaderboards.BallItUp.GetEntries(true, Callbacks, OnError);
         return;
 
         void Callbacks(Entry[] entries)
@@ -29,12 +35,17 @@ public class Leaderboard : MonoBehaviour
             _scores.Clear();
             foreach (var entry in entries)
             {
-                var scoreStr = ConvertToTimeFormat(entry.Score);
+                var scoreStr = ConvertToTimeFormat(entry.Score); 
                 _scores.Add(new LeaderboardScore(entry.Username, scoreStr));
                 Debug.Log($"Player: {entry.Username}, Score: {entry.Score}");
             }
 
             LoadUI();
+        }
+
+        void OnError(string error)
+        {
+            errorFetchingText.SetActive(true);
         }
     }
 
@@ -46,6 +57,7 @@ public class Leaderboard : MonoBehaviour
         {
             if (success)
             {
+                Leaderboards.BallItUp.ResetPlayer(); //So players can upload more entries
                 Debug.Log("Score uploaded successfully!");
             }
             else
@@ -56,29 +68,31 @@ public class Leaderboard : MonoBehaviour
     }
 
     //score will be 00:12:23 formatted as 001223 reversed , so 322100
-    public void UploadToLeaderboard(string username, string score)
+    public void UploadToLeaderboard(string username, string score) //maybe activate profanity filter and listen to callback before transitioning to main scene (?)
     {
         var scoreInt = ConvertToReversedInt(score);
         Leaderboards.BallItUp.UploadNewEntry(username, scoreInt, success =>
-        {
-            if (success)
             {
-                Debug.Log("Score uploaded successfully!");
-            }
-            else
-            {
-                Debug.LogError("Failed to upload score.");
-            }
-        });
+                if (success)
+                {
+                    Leaderboards.BallItUp.ResetPlayer();
+                    Debug.Log("Score uploaded successfully!");
+                }
+                else
+                {
+                    Debug.LogWarning("Failed to upload score.");
+                }
+            },
+            errorCallback => { Debug.LogError(errorCallback); }); //maybe another system to save the hs locally and try upload later (?)
     }
 
     private void LoadUI()
     {
-        foreach (var score in _scores)
+        for (int i = 0; i < _scores.Count; i++)
         {
             var leaderboardUnitUI =
                 Instantiate(leaderboardUnitPrefab, content.transform).GetComponent<LeaderboardUnitUI>();
-            leaderboardUnitUI.Init(score);
+            leaderboardUnitUI.Init(_scores[i],i);  
         }
     }
 

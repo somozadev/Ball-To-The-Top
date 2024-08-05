@@ -246,6 +246,7 @@ MonoBehaviour:
     Score: 0
   username: {fileID: 6568515177773364067}
   score: {fileID: 1557122713248310236}
+  leaderboardUnitBorder: {fileID: 1313529613303788962}
 --- !u!1 &4423442197494160277
 GameObject:
   m_ObjectHideFlags: 0

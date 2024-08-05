@@ -19,7 +19,9 @@ public class Data
         ResetData();
     }
 
-    public bool HasSavedData() => Time != "00:00:00";
+    public bool HasSavedData() =>
+        (Time != "00:00:00" || XPos != 0 || YPos != 0 || ZPos != 0 || XRot != 0 || YRot != 0 || ZRot != 0);
+
 
     public void ResetData()
     {

@@ -11,6 +11,11 @@ public class TimerController : MonoBehaviour
     private float elapsedTime;
     [SerializeField] private TMP_Text _timerText;
 
+    private void OnEnable()
+    {
+        GameManager.Instance.TimerController = this;
+    }
+
     void Start()
     {
         elapsedTime = 0;
@@ -61,9 +66,11 @@ public class TimerController : MonoBehaviour
         int seconds = Mathf.FloorToInt(elapsedTime % 60);
         currentTime = string.Format("{0:00}:{1:00}:{2:00}", hours, minutes, seconds);
     }
+
     private void OnDisable()
     {
-        GameManager.Instance.SaveTime(currentTime);
+        if (GameManager.Instance.finishedGame) return;
+            GameManager.Instance.SaveTime(currentTime);
     }
 
     private void OnApplicationFocus(bool hasFocus)

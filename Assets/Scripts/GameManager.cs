@@ -21,11 +21,15 @@ public class GameManager : MonoBehaviour, IUnityAdsInitializationListener
     [SerializeField] private string _iosGameId;
     [SerializeField] private RewardAds _ads;
     public Canvas adsCanvas;
-    public bool isTesting;
+    public bool adsInTestMode;
+    public bool finishedGame = false;
     private string _gameId;
 
+    public BallController BallController;
     public Leaderboard LeaderboardsRef;
+    public TimerController TimerController;
     public AnalyticsSystem AnalyticsSystemRef;
+
     public delegate void AdDelegate();
 
     public event AdDelegate OnAdEnded;
@@ -47,7 +51,7 @@ public class GameManager : MonoBehaviour, IUnityAdsInitializationListener
         }
 
         _animator = GetComponent<Animator>();
-        LeaderboardsRef = GetComponentInChildren<Leaderboard>();
+        // LeaderboardsRef = GetComponentInChildren<Leaderboard>();
         AnalyticsSystemRef.Initialize();
 
 #if UNITY_IOS
@@ -58,7 +62,7 @@ public class GameManager : MonoBehaviour, IUnityAdsInitializationListener
         _gameId = _androidGameId;
 #endif
         if (!Advertisement.isInitialized && Advertisement.isSupported)
-            Advertisement.Initialize(_gameId, isTesting, this);
+            Advertisement.Initialize(_gameId, adsInTestMode, this);
     }
 
     #endregion
@@ -75,6 +79,10 @@ public class GameManager : MonoBehaviour, IUnityAdsInitializationListener
         _notificationSystem.Initialize();
         SceneManager.LoadScene("StartScene");
     }
+
+    public void DisableInput() => BallController.readInput = false;
+    public void EnableInput() => BallController.readInput = true;
+
 
     public void LoadGameScene()
     {
@@ -122,7 +130,7 @@ public class GameManager : MonoBehaviour, IUnityAdsInitializationListener
         detectMouseGameInput = true;
         AnalyticsSystemRef.AdReaction(false);
     }
- 
+
     private IEnumerator WaitToHideRestorePosCanvasAd()
     {
         yield return new WaitForSeconds(6.5f);
@@ -132,6 +140,14 @@ public class GameManager : MonoBehaviour, IUnityAdsInitializationListener
 
     public void SaveBall(Transform trf)
     {
+        if (finishedGame)
+        {
+            currentData.ResetData();
+            DataController.Save(currentData);
+            finishedGame = false;
+            return;
+        }
+
         var position = trf.position;
         var rotation = trf.rotation;
         currentData.XPos = position.x;
@@ -145,11 +161,12 @@ public class GameManager : MonoBehaviour, IUnityAdsInitializationListener
 
     public void SaveTime(string time)
     {
+
         currentData.Time = time;
         DataController.Save(currentData);
     }
 
-    public void OnInitializationComplete() 
+    public void OnInitializationComplete()
     {
         Debug.Log("Ads Initialized correctly");
     }

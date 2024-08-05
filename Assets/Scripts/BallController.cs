@@ -14,7 +14,8 @@ public class BallController : MonoBehaviour
     [SerializeField] private CameraController _cameraController;
     private Camera _cameraRef;
     [SerializeField] private RectTransform _canvasRectTransform;
-
+    [SerializeField] private Transform InitialStartPos;
+    
     [Header("Conditionals")] [Space(10)] public bool canInteract;
     public bool isMouseClicked;
     public bool modifyCamera = true;
@@ -45,6 +46,8 @@ public class BallController : MonoBehaviour
 
     [SerializeField] private List<ParticleSystem> _particlePool;
 
+    public bool readInput;
+
 
     #region InitialMethods
 
@@ -55,6 +58,9 @@ public class BallController : MonoBehaviour
         _draggingLineRenderer = transform.GetChild(0).GetComponent<LineRenderer>();
         _cameraRef = _cameraController.cameraRef;
         LoadData(GameManager.Instance.currentData);
+        GameManager.Instance.BallController = this;
+        GameManager.Instance.EnableInput();
+
     }
 
     public void LoadData(Data data)
@@ -63,10 +69,14 @@ public class BallController : MonoBehaviour
         Vector3 rotation = new Vector3(data.XRot, data.YRot, data.ZRot);
         transform.position = position;
         transform.rotation = quaternion.Euler(rotation);
+        if (position == Vector3.zero)
+            transform.position = InitialStartPos.position;
     }
 
     private void Update()
     {
+        if (!readInput) return;
+
         if (Input.GetMouseButtonDown(0))
         {
             if (!canInteract) return;
