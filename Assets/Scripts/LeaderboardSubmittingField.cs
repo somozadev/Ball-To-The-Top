@@ -38,6 +38,7 @@ public class LeaderboardSubmittingField : MonoBehaviour
         username = score = "";
         usernameInputF.onSubmit.RemoveListener(InputFieldSubmit);
         submitButton.onClick.RemoveListener(Submit);
+        submittingFieldGroup.SetActive(false);
     }
 
     private void InputFieldSubmit(string arg0)
@@ -63,7 +64,9 @@ public class LeaderboardSubmittingField : MonoBehaviour
         GameManager.Instance.finishedGame = true;
         submittingFieldGroup.SetActive(false);
         GameManager.Instance.LoadHomeScene();
+        GameManager.Instance.TimerController.ResetTimer();
+        usernameInputF.text = "";
         
-        
+
     }
 }

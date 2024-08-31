@@ -33,6 +33,7 @@ public class Terrain : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             var cp = other.GetContact(0);
+            
             ApplyEffect(other.gameObject.GetComponent<BallController>(), cp);
         }
     }
@@ -70,6 +71,7 @@ public class Terrain : MonoBehaviour
         switch (_currentType)
         {
             case TerrainType.JUMPY:
+                SoundManager.Instance.Play("Hit-jumpy",true, false, true);
                 GetComponent<PolygonCollider2D>().sharedMaterial = null;
                 var lineVector = secondFacePoint - firstFacePoint;
                 var lineVectorXY = new Vector3(lineVector.x, lineVector.y, 0);
@@ -85,6 +87,7 @@ public class Terrain : MonoBehaviour
                 // SetAsChild(ball.transform);
                 break;
             case TerrainType.STICKY:
+                SoundManager.Instance.Play("Hit-sticky",true, false, true);
                 GetComponent<PolygonCollider2D>().sharedMaterial = null;
                 ball.DisableGravity();
                 ball.ResetVelocity();
@@ -97,6 +100,7 @@ public class Terrain : MonoBehaviour
                 break;
             case TerrainType.DEFAULT:
             default:
+                SoundManager.Instance.Play("Hit",true, false, true);
                 GetComponent<PolygonCollider2D>().sharedMaterial = null;
                 // SetAsChild(ball.transform);
                 break;

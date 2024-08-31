@@ -6,7 +6,6 @@ public class EndGameTrigger : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.LogWarning(other.gameObject.tag);
         if(!other.gameObject.tag.Equals("Player")) return;
 
         GameManager.Instance.TimerController.StopTimer();

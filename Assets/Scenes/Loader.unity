@@ -5219,6 +5219,7 @@ GameObject:
   - component: {fileID: 83830704}
   - component: {fileID: 83830703}
   - component: {fileID: 83830702}
+  - component: {fileID: 83830705}
   m_Layer: 0
   m_Name: InputField (TMP)
   m_TagString: Untagged
@@ -5385,6 +5386,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 83830700}
   m_CullTransparentMesh: 1
+--- !u!114 &83830705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 83830700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5910d0b800086934ba053410fdaadf87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &141924850
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6291,7 +6304,7 @@ GameObject:
   - component: {fileID: 552563808}
   - component: {fileID: 552563809}
   m_Layer: 0
-  m_Name: NotificationSistem
+  m_Name: NotificationSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6986,6 +6999,7 @@ GameObject:
   - component: {fileID: 687656935}
   - component: {fileID: 687656934}
   - component: {fileID: 687656936}
+  - component: {fileID: 687656937}
   m_Layer: 0
   m_Name: Panel
   m_TagString: Untagged
@@ -7106,6 +7120,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &687656937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 687656932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5910d0b800086934ba053410fdaadf87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &696445815
 GameObject:
   m_ObjectHideFlags: 0
@@ -7371,7 +7397,55 @@ MonoBehaviour:
       volume: 0
       pitch: 0
       source: {fileID: 0}
-  sounds: []
+  sounds:
+  - name: Pop-drag
+    sound:
+      type: 1
+      loop: 0
+      clip: {fileID: 8300000, guid: 90d56e3d3f7e4b04b93d5b055a5c528a, type: 3}
+      volume: 0.6
+      pitch: 1
+      source: {fileID: 0}
+  - name: Whoosh
+    sound:
+      type: 1
+      loop: 0
+      clip: {fileID: 8300000, guid: 4b7ddfe9cb71c1f439df60da506bea02, type: 3}
+      volume: 0.6
+      pitch: 1
+      source: {fileID: 0}
+  - name: Hit
+    sound:
+      type: 1
+      loop: 0
+      clip: {fileID: 8300000, guid: 344348cfbaa488e4faeeb6592b83ebb0, type: 3}
+      volume: 0.3
+      pitch: 1
+      source: {fileID: 0}
+  - name: Pop-ui
+    sound:
+      type: 1
+      loop: 0
+      clip: {fileID: 8300000, guid: f9fbb2e909ff2e447b6bc9b7e0df7deb, type: 3}
+      volume: 1
+      pitch: 1
+      source: {fileID: 0}
+  - name: Hit-sticky
+    sound:
+      type: 1
+      loop: 0
+      clip: {fileID: 8300000, guid: 9a82ffafe3d330342b25817c6a5fd8bc, type: 3}
+      volume: 0.75
+      pitch: 1
+      source: {fileID: 0}
+  - name: Hit-jumpy
+    sound:
+      type: 1
+      loop: 0
+      clip: {fileID: 8300000, guid: 4a2c8c846dffdd8498194cd107f9bbd3, type: 3}
+      volume: 0.75
+      pitch: 1
+      source: {fileID: 0}
 --- !u!1 &816656614
 GameObject:
   m_ObjectHideFlags: 0
@@ -8093,6 +8167,7 @@ GameObject:
   - component: {fileID: 992078948}
   - component: {fileID: 992078947}
   - component: {fileID: 992078950}
+  - component: {fileID: 992078951}
   m_Layer: 0
   m_Name: RewardedAd
   m_TagString: Untagged
@@ -8229,6 +8304,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding: {x: 7, y: 7, z: 7, w: 7}
   m_Softness: {x: 0, y: 0}
+--- !u!114 &992078951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992078945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5910d0b800086934ba053410fdaadf87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1043173724
 GameObject:
   m_ObjectHideFlags: 0
@@ -9010,6 +9097,7 @@ GameObject:
   - component: {fileID: 1208404848}
   - component: {fileID: 1208404847}
   - component: {fileID: 1208404846}
+  - component: {fileID: 1208404850}
   m_Layer: 0
   m_Name: Submit
   m_TagString: Untagged
@@ -9134,6 +9222,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1208404844}
   m_CullTransparentMesh: 1
+--- !u!114 &1208404850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1208404844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5910d0b800086934ba053410fdaadf87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1227990533
 GameObject:
   m_ObjectHideFlags: 0
@@ -10488,6 +10588,7 @@ GameObject:
   - component: {fileID: 1542493883}
   - component: {fileID: 1542493882}
   - component: {fileID: 1542493885}
+  - component: {fileID: 1542493886}
   m_Layer: 0
   m_Name: SKIP
   m_TagString: Untagged
@@ -10624,6 +10725,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding: {x: 7, y: 7, z: 7, w: 7}
   m_Softness: {x: 0, y: 0}
+--- !u!114 &1542493886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1542493880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5910d0b800086934ba053410fdaadf87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1548529088
 GameObject:
   m_ObjectHideFlags: 0

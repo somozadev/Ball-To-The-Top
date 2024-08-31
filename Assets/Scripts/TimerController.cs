@@ -57,6 +57,7 @@ public class TimerController : MonoBehaviour
     {
         elapsedTime = 0;
         UpdateCurrentTime();
+        GameManager.Instance.SaveTime(currentTime);
     }
 
     private void UpdateCurrentTime()

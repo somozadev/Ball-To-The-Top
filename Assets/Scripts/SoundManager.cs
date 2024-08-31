@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.Audio;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Random = System.Random;
 
@@ -17,15 +18,19 @@ public class SoundManager : MonoBehaviour
     [Space(20)] [Header("Sounds")] [Space(20)] [SerializeField]
     Sound[] sounds;
 
+    public static SoundManager Instance;
 
-    public AudioMixer GetAudioMixer
-    {
-        get { return audioMixer; }
-    }
 
     private void Awake()
     {
         Initialize();
+        DontDestroyOnLoad(gameObject);
+        if (Instance == null)
+            Instance = this;
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     public void Initialize()
@@ -38,9 +43,15 @@ public class SoundManager : MonoBehaviour
             s.sound.source.pitch = s.sound.pitch;
             s.sound.source.loop = s.sound.loop;
         }
+
         InitRandomTheme();
     }
 
+    public AudioSource GetSourceOf(string name)
+    {
+        Sound s = Array.Find(sounds, sound => sound.name == name);
+        return s.sound.source;
+    }
 
     public void MuteGeneral()
     {
@@ -108,7 +119,7 @@ public class SoundManager : MonoBehaviour
     public void SetCurrentTheme(string theme)
     {
         currentTheme = Array.Find(sounds, sound => sound.name == theme);
-        Play(theme);
+        Play(theme, false, false, false);
         StartCoroutine(WaitToThemeEndToPlayNewOne(currentTheme.sound.clip.length));
     }
 
@@ -119,26 +130,53 @@ public class SoundManager : MonoBehaviour
         InitRandomTheme();
     }
 
-    public void PlayRandomJump()
-    {
-        var jumpSounds = sounds.Where(sound => sound.sound.type == AudioTypeGroup.JUMPS).ToArray();
-        int randomIndex = UnityEngine.Random.Range(0, jumpSounds.Length);
-        string rndClip = jumpSounds[randomIndex].name;
-        Play(rndClip);
 
-    }  
-    public void PlayRandomKick()
-    {
-        var kickSounds = sounds.Where(sound => sound.sound.type == AudioTypeGroup.KICKS).ToArray();
-        int randomIndex = UnityEngine.Random.Range(0, kickSounds.Length);
-        string rndClip = kickSounds[randomIndex].name;
-        Play(rndClip);
-    }
-
-    public void Play(string name)
+    public void Play(string name, bool checkIsPlaying,bool ignoreIfIsPlaying, bool randomizePitch)
     {
         Sound s = Array.Find(sounds, sound => sound.name == name);
+        if (s == null)
+        {
+            Debug.LogWarning($"Sound {name} not found!");
+            return;
+        }
+        if(ignoreIfIsPlaying && IsPlaying(name))
+            return;
+
+        if (checkIsPlaying && IsPlaying(name))
+        {
+            AudioSource source = s.sound.GetOrCreateAudioSource(gameObject);
+            source.pitch = randomizePitch ? UnityEngine.Random.Range(1.0f, 1.9f) : s.sound.source.pitch;
+            source.Play();
+            StartCoroutine(s.sound.ReturnAudioSourceToPool(source, s.sound.clip.length));
+            return;
+        }
+
+        s.sound.source.pitch = randomizePitch ? UnityEngine.Random.Range(1.0f, 1.9f) : s.sound.source.pitch; //1f;
         s.sound.source.Play();
+        Debug.Log("Played sound!");
+    }
+
+    public void Play(string name, bool checkIsPlaying, bool randomizePitch, float newPitch)
+    {
+        Sound s = Array.Find(sounds, sound => sound.name == name);
+        if (s == null)
+        {
+            Debug.LogWarning($"Sound {name} not found!");
+            return;
+        }
+
+        if (checkIsPlaying && IsPlaying(name))
+        {
+            AudioSource source = s.sound.GetOrCreateAudioSource(gameObject);
+            source.pitch = randomizePitch ? UnityEngine.Random.Range(1.0f, 1.9f) : newPitch;
+            source.Play();
+            StartCoroutine(s.sound.ReturnAudioSourceToPool(source, s.sound.clip.length));
+            return;
+        }
+
+        s.sound.source.pitch = randomizePitch ? UnityEngine.Random.Range(1.0f, 1.9f) : s.sound.source.pitch; //1f;
+        s.sound.source.Play();
+        Debug.Log("Played sound!");
     }
 
     public void Pause(string name)
@@ -147,11 +185,10 @@ public class SoundManager : MonoBehaviour
         s.sound.source.Pause();
     }
 
-    public bool isPlaying(string name)
+    public bool IsPlaying(string name)
     {
         Sound s = Array.Find(sounds, sound => sound.name == name);
-        bool result = s.sound.source.isPlaying;
-        return result;
+        return s.sound.source.isPlaying;
     }
 
     public void PauseAllOthers(string name)
@@ -170,28 +207,71 @@ public class SoundManager : MonoBehaviour
     }
 }
 
-[System.Serializable]
+[Serializable]
 public class Sound
 {
     public string name;
     public SoundConfig sound;
+
+    public Sound(Sound s)
+    {
+        name = s.name;
+        sound = new SoundConfig(s.sound);
+    }
 }
 
 [System.Serializable]
 public class SoundConfig
 {
+    private Queue<AudioSource> audioSourcePool;
     public AudioTypeGroup type;
     public bool loop;
     public AudioClip clip;
     [Range(0f, 1f)] public float volume;
     [Range(.1f, 3f)] public float pitch;
     public AudioSource source;
+
+    public SoundConfig()
+    {
+        audioSourcePool = new Queue<AudioSource>();
+    }
+    public SoundConfig(SoundConfig s)
+    {
+        type = s.type;
+        loop = s.loop;
+        clip = s.clip;
+        volume = s.volume;
+        pitch = s.pitch;
+        source = null;
+        audioSourcePool = new Queue<AudioSource>();
+    }
+
+    public void InitializeAudioSourcePool() => audioSourcePool.Enqueue(source);
+
+    public AudioSource GetOrCreateAudioSource(GameObject gameObject)
+    {
+        if (audioSourcePool.Count > 0)
+            return audioSourcePool.Dequeue();
+
+        AudioSource newSource = gameObject.AddComponent<AudioSource>();
+        newSource.clip = clip;
+        newSource.volume = volume;
+        newSource.pitch = pitch;
+        newSource.loop = loop;
+        source = newSource;
+        return newSource;
+    }
+
+    public IEnumerator ReturnAudioSourceToPool(AudioSource source, float duration)
+    {
+        yield return new WaitForSecondsRealtime(duration);
+        source.Stop();
+        audioSourcePool.Enqueue(source);
+    }
 }
 
 public enum AudioTypeGroup
 {
-    JUMPS,
-    KICKS,
     MUSIC,
     UI,
     OTHER

@@ -8,6 +8,7 @@ using UnityEngine.Serialization;
 [RequireComponent(typeof(Rigidbody2D))]
 public class BallController : MonoBehaviour
 {
+    [SerializeField] private float distanceValue = 2.5f;
     [Header("References")] [Space(10)] public Rigidbody2D rb;
     private LineRenderer _draggingLineRenderer;
     private LineRenderer _lineRenderer;
@@ -15,7 +16,7 @@ public class BallController : MonoBehaviour
     private Camera _cameraRef;
     [SerializeField] private RectTransform _canvasRectTransform;
     [SerializeField] private Transform InitialStartPos;
-    
+
     [Header("Conditionals")] [Space(10)] public bool canInteract;
     public bool isMouseClicked;
     public bool modifyCamera = true;
@@ -47,7 +48,7 @@ public class BallController : MonoBehaviour
     [SerializeField] private List<ParticleSystem> _particlePool;
 
     public bool readInput;
-
+    private AudioSource audioSource;
 
     #region InitialMethods
 
@@ -60,7 +61,7 @@ public class BallController : MonoBehaviour
         LoadData(GameManager.Instance.currentData);
         GameManager.Instance.BallController = this;
         GameManager.Instance.EnableInput();
-
+        audioSource = SoundManager.Instance.GetSourceOf("Pop-drag");
     }
 
     public void LoadData(Data data)
@@ -129,6 +130,10 @@ public class BallController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
+        audioSource.pitch = 1f;
+        audioSource.volume = .25f;
+
+
         isInMovingObject = other.gameObject.CompareTag("MovingObject");
 
         Instantiate(_hitParticle, other.collider.ClosestPoint(transform.position),
@@ -188,14 +193,45 @@ public class BallController : MonoBehaviour
         _currentPosition = GetViewportPosition(Input.mousePosition);
     }
 
+    private float lastSoundThreshold = 0f;
+
     private void MouseDrag()
     {
         _currentPosition = GetViewportPosition(Input.mousePosition);
         Vector2 direction = -(_currentPosition - _startPosition);
         direction = direction.normalized;
-        float distance = Vector2.Distance(_startPosition, _currentPosition) * 5;
-        if (distance >= 1f)
-            distance = 1f;
+        float distance = Vector2.Distance(_startPosition, _currentPosition) * distanceValue; //*5;
+        distance = Mathf.Clamp(distance, 0f, 1f);
+
+        // if(distance > 0.35)
+        // {
+        if (distance is > 0f and < 1f)
+        {
+            //dont
+            if (distance - lastSoundThreshold >= 0.05f)
+            {
+                audioSource.volume = 0.6f;
+                audioSource.pitch = 1f + distance * 1f;
+                // audioSource.volume = distance * 0.5f + 0.5f;
+                SoundManager.Instance.Play("Pop-drag", true, true,false);
+                lastSoundThreshold += 0.05f;
+            }
+            else if (lastSoundThreshold - distance >= 0.05f)
+            {
+                audioSource.volume = 0.6f;
+                audioSource.pitch = 1f + distance * 1f;
+                SoundManager.Instance.Play("Pop-drag", true,true, false);
+                lastSoundThreshold -= 0.05f;
+            }
+        }
+        //
+        // if (distance < lastSoundThreshold - 0.05f)
+        // {
+        //     lastSoundThreshold = Mathf.Floor(distance * 20f) / 20f;
+        // }
+        //
+        // Debug.Log((float)Math.Round(distance, 1));
+
         if (modifyCamera)
             _cameraController.LerpZoomOut(distance);
         _currentPosition = _startPosition + direction * distance;
@@ -209,9 +245,20 @@ public class BallController : MonoBehaviour
         _currentPosition = GetViewportPosition(Input.mousePosition);
         if (modifyCamera)
             _cameraController.LerpZoomIn();
-        Launch();
         ResetDraggingLine();
         ResetDrawTrajectory();
+
+        // if (_velocity.magnitude > 0f)
+        // {
+        
+        float releaseDistance = Vector2.Distance(_startPosition, _currentPosition);
+        if (releaseDistance > 0.05f) // Ajusta el umbral según sea necesario
+        {
+            Launch();
+            audioSource.pitch = .5f;
+            SoundManager.Instance.Play("Pop-drag", true,true, false);
+        }
+        // }
     }
 
     #endregion

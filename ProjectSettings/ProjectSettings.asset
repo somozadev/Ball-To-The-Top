@@ -142,8 +142,11 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 1.2
-  preloadedAssets: []
+  bundleVersion: 1.4
+  preloadedAssets:
+  - {fileID: 11400000, guid: 3934cf487a2f4d448bd7c25b6c6147a2, type: 2}
+  - {fileID: 11400000, guid: 9eb9cceb86b6b9146be6903d1f92a5fd, type: 2}
+  - {fileID: 8835159769891519383, guid: 7f5f209871093ef458bb75688c61f52e, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -176,7 +179,7 @@ PlayerSettings:
     iPhone: 0
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 10
+  AndroidBundleVersionCode: 13
   AndroidMinSdkVersion: 23
   AndroidTargetSdkVersion: 34
   AndroidPreferredInstallLocation: 1
@@ -930,7 +933,7 @@ PlayerSettings:
   XboxOneOverrideIdentityPublisher: 
   vrEditorSettings: {}
   cloudServicesEnabled:
-    Unity Ads: 0
+    Unity Ads: 1
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
