@@ -35,11 +35,11 @@ public class ButtonSound : MonoBehaviour
 
     private void Play()
     {
-        SoundManager.Instance.Play("Pop-ui", false,false, true);
+        SoundManager.Instance.Play("Pop-ui", false,false, 1f, 1.5f);
     }
 
     private void Play(string v)
     {
-        SoundManager.Instance.Play("Pop-ui", false,false, true);
+        SoundManager.Instance.Play("Pop-ui", false,false, 1f, 1.5f);
     }
 }

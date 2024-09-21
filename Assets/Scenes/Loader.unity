@@ -7419,7 +7419,7 @@ MonoBehaviour:
       type: 1
       loop: 0
       clip: {fileID: 8300000, guid: 344348cfbaa488e4faeeb6592b83ebb0, type: 3}
-      volume: 0.3
+      volume: 0.2
       pitch: 1
       source: {fileID: 0}
   - name: Pop-ui
@@ -7435,7 +7435,7 @@ MonoBehaviour:
       type: 1
       loop: 0
       clip: {fileID: 8300000, guid: 9a82ffafe3d330342b25817c6a5fd8bc, type: 3}
-      volume: 0.75
+      volume: 0.85
       pitch: 1
       source: {fileID: 0}
   - name: Hit-jumpy
@@ -7443,7 +7443,7 @@ MonoBehaviour:
       type: 1
       loop: 0
       clip: {fileID: 8300000, guid: 4a2c8c846dffdd8498194cd107f9bbd3, type: 3}
-      volume: 0.75
+      volume: 0.85
       pitch: 1
       source: {fileID: 0}
 --- !u!1 &816656614

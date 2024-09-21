@@ -131,7 +131,7 @@ public class BallController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         audioSource.pitch = 1f;
-        audioSource.volume = .25f;
+        audioSource.volume = .2f;
 
 
         isInMovingObject = other.gameObject.CompareTag("MovingObject");
@@ -210,7 +210,7 @@ public class BallController : MonoBehaviour
             //dont
             if (distance - lastSoundThreshold >= 0.05f)
             {
-                audioSource.volume = 0.6f;
+                audioSource.volume = 0.4f;
                 audioSource.pitch = 1f + distance * 1f;
                 // audioSource.volume = distance * 0.5f + 0.5f;
                 SoundManager.Instance.Play("Pop-drag", true, true,false);
@@ -218,7 +218,7 @@ public class BallController : MonoBehaviour
             }
             else if (lastSoundThreshold - distance >= 0.05f)
             {
-                audioSource.volume = 0.6f;
+                audioSource.volume = 0.4f;
                 audioSource.pitch = 1f + distance * 1f;
                 SoundManager.Instance.Play("Pop-drag", true,true, false);
                 lastSoundThreshold -= 0.05f;

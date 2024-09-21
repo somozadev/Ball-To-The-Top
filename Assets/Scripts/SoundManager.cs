@@ -131,7 +131,7 @@ public class SoundManager : MonoBehaviour
     }
 
 
-    public void Play(string name, bool checkIsPlaying,bool ignoreIfIsPlaying, bool randomizePitch)
+    public void Play(string name, bool checkIsPlaying, bool ignoreIfIsPlaying, bool randomizePitch)
     {
         Sound s = Array.Find(sounds, sound => sound.name == name);
         if (s == null)
@@ -139,7 +139,8 @@ public class SoundManager : MonoBehaviour
             Debug.LogWarning($"Sound {name} not found!");
             return;
         }
-        if(ignoreIfIsPlaying && IsPlaying(name))
+
+        if (ignoreIfIsPlaying && IsPlaying(name))
             return;
 
         if (checkIsPlaying && IsPlaying(name))
@@ -152,6 +153,32 @@ public class SoundManager : MonoBehaviour
         }
 
         s.sound.source.pitch = randomizePitch ? UnityEngine.Random.Range(1.0f, 1.9f) : s.sound.source.pitch; //1f;
+        s.sound.source.Play();
+        Debug.Log("Played sound!");
+    }
+
+    public void Play(string name, bool checkIsPlaying, bool ignoreIfIsPlaying, float randomizePitchMin, float randomizePitchMax)
+    {
+        Sound s = Array.Find(sounds, sound => sound.name == name);
+        if (s == null)
+        {
+            Debug.LogWarning($"Sound {name} not found!");
+            return;
+        }
+
+        if (ignoreIfIsPlaying && IsPlaying(name))
+            return;
+
+        if (checkIsPlaying && IsPlaying(name))
+        {
+            AudioSource source = s.sound.GetOrCreateAudioSource(gameObject);
+            source.pitch =  UnityEngine.Random.Range(randomizePitchMin, randomizePitchMax) ;
+            source.Play();
+            StartCoroutine(s.sound.ReturnAudioSourceToPool(source, s.sound.clip.length));
+            return;
+        }
+
+        s.sound.source.pitch =  UnityEngine.Random.Range(randomizePitchMin, randomizePitchMax) ;
         s.sound.source.Play();
         Debug.Log("Played sound!");
     }
@@ -235,6 +262,7 @@ public class SoundConfig
     {
         audioSourcePool = new Queue<AudioSource>();
     }
+
     public SoundConfig(SoundConfig s)
     {
         type = s.type;
